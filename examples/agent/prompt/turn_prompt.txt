@@ -1,0 +1,3 @@
+Start with <thinking>. Format strictly as: <thinking>...</thinking><tool_call>...</tool_call> or <thinking>...</thinking><answer>...</answer>
+
+Based on sampling, here are the following frames

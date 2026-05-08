@@ -1,6 +1,6 @@
 # VideoBrain: Learning Adaptive Frame Sampling for Video Understanding
 
-**ICML 2026**
+**ICML 2026** | [arXiv](https://arxiv.org/abs/2602.04094)
 
 Junbo Zou, Ziheng Huang, Shengjie Zhang, Liwen Zhang, Weining Shen
 
@@ -42,7 +42,7 @@ Training uses a two-stage process:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/VideoBrain.git
+git clone https://github.com/Jacob-Chow/VideoBrain.git
 cd VideoBrain
 
 # Install dependencies
@@ -62,7 +62,7 @@ transformers == 4.57.1
 
 Download the SigLIP2 model for CLIP-based frame retrieval:
 
-- **Model**: `google/siglip-so400m-patch14-384`
+- **Model**: [`google/siglip-so400m-patch14-384`](https://huggingface.co/google/siglip-so400m-patch14-384)
 - **Place at**: `examples/agent/clip_module/SigLIP2_ViT/`
 
 ---

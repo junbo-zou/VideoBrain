@@ -71,24 +71,6 @@ Download the SigLIP2 model for CLIP-based frame retrieval:
 
 ## Inference
 
-### Configuration
-
-Edit the `CONFIG` dict in `examples/agent/infer.py`:
-
-```python
-CONFIG = {
-    "API_URL": "http://your-vllm-endpoint/v1/chat/completions",
-    "MODEL_NAME": "path/to/videobrain-checkpoint",
-    "TARGET_JSON_PATH": "path/to/questions.json",
-    "BASE_VIDEO_DIR": "path/to/videos/",
-    "OUTPUT_JSON_PATH": "path/to/output.json",
-    "NUM_INITIAL_FRAMES": 16,       # initial frames fed to the model
-    "CLIP_SAMPLE_FRAMES": 4,        # frames returned by CLIP agent per call
-    "UNIFORM_SAMPLE_FRAMES": 8,     # frames returned by Uniform agent per call
-    "CLIP_BACKEND": "siglip",       # "siglip" or "clip"
-}
-```
-
 ### Run
 
 ```bash

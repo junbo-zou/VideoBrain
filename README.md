@@ -95,30 +95,6 @@ CONFIG = {
 python examples/agent/infer.py
 ```
 
-### Input Format
-
-```json
-[
-  {
-    "video": "video_id",
-    "question": "What happens after the character opens the door?",
-    "options": ["A. ...", "B. ...", "C. ...", "D. ..."]
-  }
-]
-```
-
-### Output Format
-
-```json
-[
-  {
-    "video": "video_id",
-    "question": "What happens after the character opens the door?",
-    "answer": "B"
-  }
-]
-```
-
 ---
 
 ## How It Works

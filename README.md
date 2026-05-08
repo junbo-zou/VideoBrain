@@ -77,8 +77,6 @@ python examples/agent/infer.py
 
 ---
 
----
-
 ## Training
 
 Training uses [verl](https://github.com/volcengine/verl) for distributed GRPO. The base model is **Qwen3-VL-8B-Instruct**.

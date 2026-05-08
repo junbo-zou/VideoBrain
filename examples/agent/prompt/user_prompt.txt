@@ -1,8 +1,0 @@
-Question: {}
-
-# Video Information:
-- Total frames: {}
-- FPS: {}
-
-# Output Format:
-Start with <thinking>. Format strictly as: <thinking>...</thinking><tool_call>...</tool_call> or <thinking>...</thinking><answer>...</answer>

@@ -4,8 +4,6 @@
 
 Junbo Zou, Ziheng Huang, Shengjie Zhang, Liwen Zhang, Weining Shen
 
-> VideoBrain is an end-to-end framework that enables Vision-Language Models to adaptively acquire visual information through learned sampling policies — achieving consistent improvements on long video benchmarks while using 30–40% fewer frames.
-
 ---
 
 ## Overview
@@ -78,47 +76,6 @@ python examples/agent/infer.py
 ```
 
 ---
-
-## How It Works
-
-At inference time, the model follows an iterative loop:
-
-```
-Initial 16 frames + Question
-        ↓
-  <thinking> ... </thinking>
-        ↓
-  [Sufficient?] → Yes → <answer>...</answer>
-        ↓ No
-  <tool_call>{"name": "clip_sample", "arguments": {...}}</tool_call>
-        ↓
-  New frames retrieved → continue reasoning
-        ↓ (up to K=5 rounds)
-  <answer>...</answer>
-```
-
-**CLIP Sample Agent** call format:
-```json
-{
-  "name": "clip_sample",
-  "arguments": {
-    "start_frame": 0,
-    "end_frame": 5000,
-    "prompt": "a woman wearing a red coat"
-  }
-}
-```
-
-**Uniform Sample Agent** call format:
-```json
-{
-  "name": "uniform_sample",
-  "arguments": {
-    "start_frame": 1000,
-    "end_frame": 2000
-  }
-}
-```
 
 ---
 

@@ -2,6 +2,8 @@
 
 **ICML 2026**
 
+Junbo Zou, Ziheng Huang, Shengjie Zhang, Liwen Zhang, Weining Shen
+
 > VideoBrain is an end-to-end framework that enables Vision-Language Models to adaptively acquire visual information through learned sampling policies — achieving consistent improvements on long video benchmarks while using 30–40% fewer frames.
 
 ---
@@ -183,21 +185,9 @@ Split: ~1.6K for SFT, ~6.4K for RL, both trained for 1 epoch.
 
 ---
 
-## Behavior-Aware Reward
-
-| Category | w/o Agent ✓ | Agent ✓ | Agent ✗ |
-|----------|:-----------:|:-------:|:-------:|
-| Direct   | +0.5        | 0       | 0       |
-| Adaptive | +0.5        | +0.5    | 0       |
-| Active   | 0           | +0.5    | +0.2    |
-
-This design prevents reward hacking: the model cannot gain reward by indiscriminately calling agents. It must learn when agent invocation is genuinely beneficial.
-
----
-
 ## Acknowledgements
 
-This work builds upon [verl](https://github.com/volcengine/verl), [DeepEyes](https://github.com/Visual-Agent/DeepEyes), PyTorch, Transformers, vLLM, and Qwen-VL. All third-party code retains its original license.
+This work builds upon [verl](https://github.com/volcengine/verl), [DeepEyes](https://github.com/Visual-Agent/DeepEyes), [FrameThinker](https://github.com/lcqysl/FrameThinker), PyTorch, Transformers, vLLM, and Qwen-VL. All third-party code retains its original license.
 
 ---
 
@@ -206,6 +196,7 @@ This work builds upon [verl](https://github.com/volcengine/verl), [DeepEyes](htt
 ```bibtex
 @inproceedings{videobrain2026,
   title     = {VideoBrain: Learning Adaptive Frame Sampling for Video Understanding},
+  author    = {Junbo Zou and Ziheng Huang and Shengjie Zhang and Liwen Zhang and Weining Shen},
   booktitle = {Proceedings of the 43rd International Conference on Machine Learning (ICML)},
   year      = {2026},
 }

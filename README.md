@@ -1,52 +1,55 @@
-# Anonymous Code Submission for ICML 2026
+# VideoBrain: Learning Adaptive Frame Sampling for Video Understanding
 
-This supplementary code package contains the core implementation of our proposed framework for long-video reasoning.
+**ICML 2026**
 
-## 🚀 Quick Start
+> VideoBrain is an end-to-end framework that enables Vision-Language Models to adaptively acquire visual information through learned sampling policies — achieving consistent improvements on long video benchmarks while using 30–40% fewer frames.
 
-### Installation
+---
+
+## Overview
+
+Long-form video understanding remains challenging for VLMs due to the tension between computational constraints and the need to capture information distributed across thousands of frames. Existing approaches either sample frames uniformly (risking information loss) or select keyframes in a single pass (with no recovery from poor choices).
+
+**VideoBrain** solves this with dual complementary agents and a behavior-aware reward function:
+
+![VideoBrain Framework](figures/vb.png)
+
+- **CLIP Sample Agent** — semantic retrieval across the video (finds specific visual content regardless of temporal location)
+- **Uniform Sample Agent** — dense temporal sampling within intervals (captures fine-grained sequential information)
+
+Unlike prior agent-based methods that rely on text-only LLMs orchestrating visual tools, our VLM directly perceives frames and reasons about information sufficiency — truly **"thinking with video."**
+
+---
+
+## Training Pipeline
+
+![Training Framework](figures/train.png)
+
+Training uses a two-stage process:
+
+1. **Data Classification** — A dual-model pipeline classifies video QA samples into three categories based on whether agent invocation is beneficial:
+   - **Direct**: Initial frames are sufficient; agent calls not needed
+   - **Adaptive**: Model capability gap; either strategy may help
+   - **Active**: Additional visual information is genuinely required
+
+2. **Supervised Fine-Tuning (SFT)** — Cold-start training on teacher-generated trajectories for Adaptive and Active samples, teaching reasoning and tool usage
+
+3. **Reinforcement Learning (GRPO)** — Refines agent usage policy with a **behavior-aware reward** that prevents reward hacking by discouraging unnecessary agent calls on Direct questions while encouraging exploration on Active ones
+
+---
+
+## Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/VideoBrain.git
+cd VideoBrain
+
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Download Vision Model
-
-Download the required SigLIP model for frame similarity computation:
-
-- Model name: google/siglip-so400m-patch14-384
-- Place in: `examples/agent/clip_module/SigLIP2_ViT/`
-
-### Inference
-
-```bash
-python examples/agent/infer.py
-```
-
-Edit the CONFIG section in the script to set:
-
-- API_URL: Your model serving endpoint
-- MODEL_NAME: Path to your trained model
-- TARGET_JSON_PATH: Input questions file
-- BASE_VIDEO_DIR: Directory containing videos
-- OUTPUT_JSON_PATH: Where to save results
-
-Output format:
-
-```json
-[
-  {
-    "video": "video_id",
-    "question": "question text",
-    "answer": "model answer"
-  }
-]
-```
-
-## 📦 Dependencies
-
-Core requirements:
+### Core Requirements
 
 ```
 Python >= 3.10
@@ -55,16 +58,155 @@ vLLM == 0.11.1
 transformers == 4.57.1
 ```
 
-Additional dependencies are listed in `requirements.txt`.
+### Download Vision Model
 
-## 🙏 Acknowledgements
+Download the SigLIP2 model for CLIP-based frame retrieval:
 
-This work builds upon open-source frameworks including verl, DeepEyes, PyTorch, Transformers, vLLM, and vision-language models. All third-party code retains original licenses.
-
-## 📝 Anonymization Note
-
-This submission has been anonymized for review. All author information, paper title, institution details, and identifying information have been removed. Full attribution will be provided upon acceptance.
+- **Model**: `google/siglip-so400m-patch14-384`
+- **Place at**: `examples/agent/clip_module/SigLIP2_ViT/`
 
 ---
 
-**Anonymous Submission for ICML 2026**
+## Inference
+
+### Configuration
+
+Edit the `CONFIG` dict in `examples/agent/infer.py`:
+
+```python
+CONFIG = {
+    "API_URL": "http://your-vllm-endpoint/v1/chat/completions",
+    "MODEL_NAME": "path/to/videobrain-checkpoint",
+    "TARGET_JSON_PATH": "path/to/questions.json",
+    "BASE_VIDEO_DIR": "path/to/videos/",
+    "OUTPUT_JSON_PATH": "path/to/output.json",
+    "NUM_INITIAL_FRAMES": 16,       # initial frames fed to the model
+    "CLIP_SAMPLE_FRAMES": 4,        # frames returned by CLIP agent per call
+    "UNIFORM_SAMPLE_FRAMES": 8,     # frames returned by Uniform agent per call
+    "CLIP_BACKEND": "siglip",       # "siglip" or "clip"
+}
+```
+
+### Run
+
+```bash
+python examples/agent/infer.py
+```
+
+### Input Format
+
+```json
+[
+  {
+    "video": "video_id",
+    "question": "What happens after the character opens the door?",
+    "options": ["A. ...", "B. ...", "C. ...", "D. ..."]
+  }
+]
+```
+
+### Output Format
+
+```json
+[
+  {
+    "video": "video_id",
+    "question": "What happens after the character opens the door?",
+    "answer": "B"
+  }
+]
+```
+
+---
+
+## How It Works
+
+At inference time, the model follows an iterative loop:
+
+```
+Initial 16 frames + Question
+        ↓
+  <thinking> ... </thinking>
+        ↓
+  [Sufficient?] → Yes → <answer>...</answer>
+        ↓ No
+  <tool_call>{"name": "clip_sample", "arguments": {...}}</tool_call>
+        ↓
+  New frames retrieved → continue reasoning
+        ↓ (up to K=5 rounds)
+  <answer>...</answer>
+```
+
+**CLIP Sample Agent** call format:
+```json
+{
+  "name": "clip_sample",
+  "arguments": {
+    "start_frame": 0,
+    "end_frame": 5000,
+    "prompt": "a woman wearing a red coat"
+  }
+}
+```
+
+**Uniform Sample Agent** call format:
+```json
+{
+  "name": "uniform_sample",
+  "arguments": {
+    "start_frame": 1000,
+    "end_frame": 2000
+  }
+}
+```
+
+---
+
+## Training
+
+Training uses [verl](https://github.com/volcengine/verl) for distributed GRPO. The base model is **Qwen3-VL-8B-Instruct**.
+
+### Training Data
+
+~8K samples curated from:
+- [Video-Holmes](https://github.com/liang-hou/video-holmes)
+- [CG-Bench](https://github.com/CG-Bench/CG-Bench)
+- [NExT-QA](https://github.com/doc-doc/NExT-QA)
+- [MLVU](https://github.com/JUNJIE99/MLVU)
+- [LongVideo-Reason](https://huggingface.co/datasets/longvideoreason)
+
+Split: ~1.6K for SFT, ~6.4K for RL, both trained for 1 epoch.
+
+### Infrastructure
+
+8× H20 GPUs, ~472 GPU hours total.
+
+---
+
+## Behavior-Aware Reward
+
+| Category | w/o Agent ✓ | Agent ✓ | Agent ✗ |
+|----------|:-----------:|:-------:|:-------:|
+| Direct   | +0.5        | 0       | 0       |
+| Adaptive | +0.5        | +0.5    | 0       |
+| Active   | 0           | +0.5    | +0.2    |
+
+This design prevents reward hacking: the model cannot gain reward by indiscriminately calling agents. It must learn when agent invocation is genuinely beneficial.
+
+---
+
+## Acknowledgements
+
+This work builds upon [verl](https://github.com/volcengine/verl), [DeepEyes](https://github.com/Visual-Agent/DeepEyes), PyTorch, Transformers, vLLM, and Qwen-VL. All third-party code retains its original license.
+
+---
+
+## Citation
+
+```bibtex
+@inproceedings{videobrain2026,
+  title     = {VideoBrain: Learning Adaptive Frame Sampling for Video Understanding},
+  booktitle = {Proceedings of the 43rd International Conference on Machine Learning (ICML)},
+  year      = {2026},
+}
+```

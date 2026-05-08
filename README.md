@@ -1,6 +1,6 @@
 # VideoBrain: Learning Adaptive Frame Sampling for Video Understanding
 
-**ICML 2026** | [arXiv](https://arxiv.org/abs/2602.04094)
+**ICML 2026** | [![ArXiv](https://img.shields.io/badge/arXiv-paper-red)](https://arxiv.org/abs/2602.04094)
 
 Junbo Zou, Ziheng Huang, Shengjie Zhang, Liwen Zhang, Weining Shen
 

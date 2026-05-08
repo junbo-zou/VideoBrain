@@ -84,7 +84,7 @@ Training uses [verl](https://github.com/volcengine/verl) for distributed GRPO. T
 ### Training Data
 
 ~8K samples curated from:
-- [Video-Holmes](https://github.com/liang-hou/video-holmes)
+- [Video-Holmes](https://github.com/TencentARC/Video-Holmes)
 - [CG-Bench](https://github.com/CG-Bench/CG-Bench)
 - [NExT-QA](https://github.com/doc-doc/NExT-QA)
 - [MLVU](https://github.com/JUNJIE99/MLVU)

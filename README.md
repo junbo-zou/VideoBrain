@@ -94,7 +94,7 @@ Training uses [verl](https://github.com/volcengine/verl) for distributed GRPO. T
 - [CG-Bench](https://github.com/CG-Bench/CG-Bench)
 - [NExT-QA](https://github.com/doc-doc/NExT-QA)
 - [MLVU](https://github.com/JUNJIE99/MLVU)
-- [LongVideo-Reason](https://huggingface.co/datasets/longvideoreason)
+- [LongVideo-Reason](https://github.com/NVlabs/Long-RL)
 
 Split: ~1.6K for SFT, ~6.4K for RL, both trained for 1 epoch.
 
